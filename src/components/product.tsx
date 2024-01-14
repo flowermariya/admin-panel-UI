@@ -21,36 +21,8 @@ interface Product {
 
 const Product = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [showModal, setShowModal] = useState(false); // State to control the AddProduct modal
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-
-  //   useEffect(() => {
-  //     const fetchProducts = async () => {
-  //       try {
-  //         const token = localStorage.getItem("token");
-  //         if (!token) throw new Error("No token found");
-
-  //         const response = await fetch("http://localhost:3000/product", {
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         });
-
-  //         if (!response.ok) throw new Error("Failed to fetch products");
-
-  //         const data = await response.json();
-  //         console.log("Products:", data.itemImage);
-
-  //         setProducts(data);
-  //         navigate("/products");
-  //       } catch (error) {
-  //         console.error("Error fetching products:", error);
-  //       }
-  //     };
-
-  //     fetchProducts();
-  //   }, []);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -68,6 +40,7 @@ const Product = () => {
 
       const data = await response.json();
       setProducts(data);
+      navigate("/products");
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -81,9 +54,7 @@ const Product = () => {
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-            Products
-          </h2>
+          <h2 className="text-2xl leading-tight text-gray-900">Products</h2>
           <button
             onClick={() => setShowModal(true)}
             className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
@@ -95,7 +66,7 @@ const Product = () => {
               onClose={() => setShowModal(false)}
               onProductAdded={() => {
                 setShowModal(false);
-                fetchProducts(); // Call fetchProducts after a product is added
+                fetchProducts();
               }}
             />
           )}{" "}
