@@ -149,8 +149,8 @@ const Sales = () => {
   }, []);
 
   return (
-    <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
-      <div className="container max-w-screen-lg mx-auto">
+    <div className="p-6 bg-gray-100 flex items-center justify-center">
+      <div className="container max-w-screen-lg">
         <div>
           <p className="text-gray-500 mb-6">Sales Billing Window </p>{" "}
           <form onSubmit={handleSalesSubmit}>

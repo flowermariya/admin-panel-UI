@@ -35,9 +35,13 @@ const Customer = () => {
         },
       });
 
+      if (!response.ok) throw new Error("Failed create sales");
+
       const data = await response.json();
-      setCustomers(data);
-      navigate("/customers");
+      if (data) {
+        setCustomers(data);
+        navigate("/customers");
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -119,7 +123,7 @@ const Customer = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {customers.map((customer) => {
+                  {customers?.map((customer) => {
                     return (
                       <tr>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">

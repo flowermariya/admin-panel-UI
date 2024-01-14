@@ -61,9 +61,9 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-0">
         <div className="col-span-1">
-          <div className="flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
+          <div className=" bg-clip-border rounded-xl bg-white text-gray-700 w-full max-w-[20rem] shadow-xl shadow-blue-gray-900/5">
             <div className="mb-2 p-4">
               <h5 className="block antialiased tracking-normal font-sans text-xl font-semibold leading-snug text-gray-900">
                 Admin Dashboard
@@ -184,7 +184,9 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="col-span-1">
-          <Sales />
+          <div className="p-0 m-0">
+            <Sales />
+          </div>
         </div>
       </div>
     </>
