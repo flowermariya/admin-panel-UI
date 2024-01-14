@@ -21,43 +21,19 @@ interface Product {
 
 const Product = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [showModal, setShowModal] = useState(false); // State to control the AddProduct modal
+  const [showModal, setShowModal] = useState(false);
+  const [filter, setFilter] = useState("ALL");
+
   const navigate = useNavigate();
-
-  //   useEffect(() => {
-  //     const fetchProducts = async () => {
-  //       try {
-  //         const token = localStorage.getItem("token");
-  //         if (!token) throw new Error("No token found");
-
-  //         const response = await fetch("http://localhost:3000/product", {
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         });
-
-  //         if (!response.ok) throw new Error("Failed to fetch products");
-
-  //         const data = await response.json();
-  //         console.log("Products:", data.itemImage);
-
-  //         setProducts(data);
-  //         navigate("/products");
-  //       } catch (error) {
-  //         console.error("Error fetching products:", error);
-  //       }
-  //     };
-
-  //     fetchProducts();
-  //   }, []);
 
   const fetchProducts = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
-      const response = await fetch("http://localhost:3000/product", {
+      let url = `http://localhost:3000/product?belongsTo=${filter.toUpperCase()}`;
+
+      const response = await fetch(url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -68,34 +44,70 @@ const Product = () => {
 
       const data = await response.json();
       setProducts(data);
+      navigate("/products");
     } catch (error) {
       console.error("Error fetching products:", error);
     }
-  }, []);
+  }, [filter]);
+
+  const deleteProduct = async (id: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No token found");
+
+      let url = `http://localhost:3000/product/${id}`;
+
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to delete product");
+      fetchProducts();
+
+      await response.json();
+      if (response) {
+        fetchProducts();
+      }
+    } catch (error) {
+      console.error("Error deleting product", error);
+    }
+  };
 
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);
+  }, [fetchProducts, filter]);
 
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-            Products
-          </h2>
-          <button
-            onClick={() => setShowModal(true)}
-            className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-          >
-            Add Product
-          </button>
+          <h2 className="text-2xl leading-tight text-gray-900">Products</h2>
+          <div className="flex items-center gap-3">
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="border border-gray-300 rounded-lg text-sm px-4 py-2.5"
+            >
+              <option value="all">ALL</option>
+              <option value="owner">OWNER</option>
+            </select>
+            <button
+              onClick={() => setShowModal(true)}
+              className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >
+              Add Product
+            </button>
+          </div>
           {showModal && (
             <AddProduct
               onClose={() => setShowModal(false)}
               onProductAdded={() => {
                 setShowModal(false);
-                fetchProducts(); // Call fetchProducts after a product is added
+                fetchProducts();
               }}
             />
           )}{" "}
@@ -127,6 +139,25 @@ const Product = () => {
                   GST: {product.gstAmount} ({product.gstPercentage}%)
                 </p>
               </div>
+              <button
+                onClick={() => deleteProduct(product?.id)}
+                className="absolute top-2 right-2 hidden group-hover:block"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 text-red-500 hover:text-red-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19.5 6l-1.5 1.5M4.5 6l1.5 1.5M15 6h-6m1.5 0V5.25c0-.414.336-.75.75-.75h1.5c.414 0 .75.336.75.75V6m0 0v10.5c0 .414-.336.75-.75.75h-3c-.414 0-.75-.336-.75-.75V6"
+                  />
+                </svg>
+              </button>
             </div>
           ))}
         </div>
