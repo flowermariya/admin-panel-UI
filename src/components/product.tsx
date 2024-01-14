@@ -1,7 +1,7 @@
-// Product.js
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import AddProduct from "./addProduct";
+import { Link } from "react-router-dom";
 
 interface Product {
   id: string;
@@ -84,8 +84,16 @@ const Product = () => {
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+        <div className="flex justify-end flex-1">
+          <h2 className="text-l leading-tight text-gray-900">
+            <Link to="/dashboard">Go to dashboard</Link>
+          </h2>
+        </div>
+        <br />
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl leading-tight text-gray-900">Products</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 leading-tight">
+            Products
+          </h2>
           <div className="flex items-center gap-3">
             <select
               value={filter}
