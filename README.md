@@ -22,7 +22,7 @@ To get a local copy up and running, follow these simple steps:
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/project_name.git
+   git clone https://github.com/flowermariya/admin-panel-UI
 2. Install NPM packages
     npm install
 3. Start the development server
