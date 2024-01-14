@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 
 interface Props {
@@ -19,6 +20,9 @@ const AddProduct: React.FC<Props> = ({ onClose, onProductAdded }) => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
+      const decodedToken = jwtDecode(token);
+      const userId: any = decodedToken?.sub;
+
       const response = await fetch("http://localhost:3000/product", {
         method: "POST",
         headers: {
@@ -32,7 +36,7 @@ const AddProduct: React.FC<Props> = ({ onClose, onProductAdded }) => {
           unitPrice: parseInt(unitPrice),
           mrp: parseInt(mrp),
           itemName: productName,
-          staff: "ds",
+          staff: userId,
         }),
       });
 
