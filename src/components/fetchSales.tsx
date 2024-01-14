@@ -1,32 +1,37 @@
-import { useEffect, useState, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
-interface Product {
+interface Sale {
   id: string;
-  address: string;
-  createdAt: string;
-  customerName: string;
-  deliveryAddress: string;
-  isGST: boolean;
-  phoneNumber: string;
-  transactionMode: string;
+  billNo: string;
+  billDate: string;
+  product: {
+    itemName: string;
+    code: string;
+  };
+  customer: {
+    id: string;
+    customerName: string;
+  };
+  staff: {
+    id: string;
+    name: string;
+  };
+  enteredBy: string;
+  grandTotal: string;
+  paymentMode: string;
+  vehicleNumber: string;
 }
 
-const Customer = () => {
-  const [customers, setCustomers] = useState<Product[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate();
+const FetchSales = () => {
+  const [sales, setSales] = useState<Sale[]>([]);
 
-  const fetchCustomers = useCallback(async (search = "") => {
+  const getSales = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
-      let url = "http://localhost:3000/customer";
-      if (search) {
-        url += `/search/${search}`;
-      }
-      console.log(url);
+      let url = `http://localhost:3000/sales`;
 
       const response = await fetch(url, {
         headers: {
@@ -35,30 +40,16 @@ const Customer = () => {
         },
       });
 
-      if (!response.ok) throw new Error("Failed create sales");
-
       const data = await response.json();
-      if (data) {
-        setCustomers(data);
-        navigate("/customers");
-      }
+      setSales(data);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
-  }, []);
-
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    fetchCustomers(searchTerm);
   };
 
   useEffect(() => {
-    fetchCustomers();
-  }, [fetchCustomers]);
+    getSales();
+  }, []);
 
   return (
     <div className="bg-white">
@@ -73,31 +64,8 @@ const Customer = () => {
           <br />
           <div className="flex flex-row mb-1 sm:mb-0 justify-between w-full">
             <h2 className="text-2xl font-semibold text-gray-900 leading-tight">
-              Customers
-            </h2>{" "}
-            <div className="text-end">
-              <form
-                onSubmit={handleSearchSubmit}
-                className="flex w-full max-w-sm space-x-3"
-              >
-                <div className=" relative ">
-                  <input
-                    type="text"
-                    id='"form-subscribe-Filter'
-                    className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    placeholder="Search for customers"
-                    value={searchTerm}
-                    onChange={handleSearch}
-                  />
-                </div>
-                <button
-                  className="flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2"
-                  type="submit"
-                >
-                  Search
-                </button>
-              </form>
-            </div>
+              Sales
+            </h2>
           </div>
           <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
             <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
@@ -105,50 +73,76 @@ const Customer = () => {
                 <thead>
                   <tr>
                     <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Name
+                      Bill No
                     </th>
                     <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Address
+                      Bill Date
                     </th>
                     <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      PhoneNumber
+                      Product Name
                     </th>
                     <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Delivery Address
+                      Product Code
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Customer Name
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Entered By
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Grand Total
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Payment Mode
                     </th>{" "}
                     <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Transaction Mode
+                      Vehicle Number
                     </th>
-                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100"></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {customers?.map((customer) => {
+                  {sales.map((sale) => {
                     return (
                       <tr>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <div className="flex items-center">
                             <div className="ml-3">
                               <p className="text-gray-900 whitespace-no-wrap">
-                                {customer.customerName}
+                                {sale?.billNo}
                               </p>
                             </div>
                           </div>
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <p className="text-gray-900 whitespace-no-wrap">
-                            {customer.address}
+                            {sale?.billDate}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {sale?.product?.itemName}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {sale?.product?.code}
                           </p>
                         </td>
 
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <p className="text-gray-900 whitespace-no-wrap">
-                            {customer.phoneNumber}
+                            {sale?.customer?.customerName}
                           </p>
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <p className="text-gray-900 whitespace-no-wrap">
-                            {customer.deliveryAddress}
+                            {sale?.staff?.name}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {sale?.grandTotal}
                           </p>
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -158,10 +152,14 @@ const Customer = () => {
                               className="absolute inset-0 bg-green-200 opacity-50 rounded-full"
                             ></span>
                             <span className="relative">
-                              {" "}
-                              {customer.transactionMode}
+                              {sale?.paymentMode}
                             </span>
                           </span>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {sale?.vehicleNumber}
+                          </p>
                         </td>
                       </tr>
                     );
@@ -176,4 +174,4 @@ const Customer = () => {
   );
 };
 
-export default Customer;
+export default FetchSales;
