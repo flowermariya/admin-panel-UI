@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
+import { backEndUrl } from "../env.constant";
 
 interface Props {
   onClose: () => void;
@@ -23,7 +24,7 @@ const AddProduct: React.FC<Props> = ({ onClose, onProductAdded }) => {
       const decodedToken = jwtDecode(token);
       const userId: any = decodedToken?.sub;
 
-      const response = await fetch("http://localhost:3000/product", {
+      const response = await fetch(`${backEndUrl}/product`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

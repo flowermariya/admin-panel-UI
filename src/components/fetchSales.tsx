@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { backEndUrl } from "../env.constant";
 
 interface Sale {
   id: string;
@@ -31,7 +32,7 @@ const FetchSales = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
-      let url = `http://localhost:3000/sales`;
+      let url = `${backEndUrl}/sales`;
 
       const response = await fetch(url, {
         headers: {
