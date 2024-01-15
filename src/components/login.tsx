@@ -1,5 +1,6 @@
 import React, { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { backEndUrl } from "../env.constant";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -10,7 +11,7 @@ export default function Login() {
     event.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3000/auth", {
+      const response = await fetch(`${backEndUrl}/auth`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

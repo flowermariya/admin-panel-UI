@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import AddProduct from "./addProduct";
 import { Link } from "react-router-dom";
+import { backEndUrl } from "../env.constant";
 
 interface Product {
   id: string;
@@ -31,7 +32,7 @@ const Product = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
-      let url = `http://localhost:3000/product?belongsTo=${filter.toUpperCase()}`;
+      let url = `${backEndUrl}/product?belongsTo=${filter.toUpperCase()}`;
 
       const response = await fetch(url, {
         headers: {
@@ -55,7 +56,7 @@ const Product = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
-      let url = `http://localhost:3000/product/${id}`;
+      let url = `${backEndUrl}/product/${id}`;
 
       const response = await fetch(url, {
         method: "DELETE",
