@@ -13,7 +13,7 @@ interface Admin {
   role: string;
 }
 
-const Dashboard = () => {
+const Dashboard = ({ children }: any) => {
   const [userDetails, setUserDetails] = useState<Admin | null>(null);
   const navigate = useNavigate();
 
@@ -61,7 +61,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-0">
+      <div className="grid grid-cols-4 gap-0">
         <div className="col-span-1">
           <div className=" bg-clip-border rounded-xl bg-white text-gray-700 w-full max-w-[20rem] shadow-xl shadow-blue-gray-900/5">
             <div className="mb-2 p-4">
@@ -70,6 +70,28 @@ const Dashboard = () => {
               </h5>
             </div>
             <nav className="flex flex-col gap-1 min-w-[240px] p-2 font-sans text-base font-normal text-gray-700">
+              <div
+                role="button"
+                onClick={() => navigate("/dashboard")}
+                className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all hover:bg-red-100 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-gray-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none"
+              >
+                <div className="grid place-items-center mr-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                    className="h-5 w-5"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.865 1.679l-1.263 12A1.875 1.875 0 004.25 22.5h15.5a1.875 1.875 0 001.865-2.071l-1.263-12a1.875 1.875 0 00-1.865-1.679H16.5V6a4.5 4.5 0 10-9 0zM12 3a3 3 0 00-3 3v.75h6V6a3 3 0 00-3-3zm-3 8.25a3 3 0 106 0v-.75a.75.75 0 011.5 0v.75a4.5 4.5 0 11-9 0v-.75a.75.75 0 011.5 0v.75z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                </div>
+                Add Sale
+              </div>
               <div
                 role="button"
                 onClick={() => navigate("/products")}
@@ -183,10 +205,8 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="col-span-1">
-          <div className="p-0 m-0">
-            <Sales />
-          </div>
+        <div className="col-span-3">
+          <div className="p-0 m-0">{children}</div>
         </div>
       </div>
     </>
