@@ -16,23 +16,24 @@ const Sales = () => {
   const [note, setNote] = useState("");
   const [vehicleNumber, setVehicleNumber] = useState("");
   const [deliveryCharge, setDeliveryCharge] = useState("");
-  const [totalTaxableAmount, setTotalTaxableAmount] = useState("");
+  const [totalTaxableAmount, setTotalTaxableAmount] = useState(0);
   const [outstanding, setOutstanding] = useState("");
   const [discount, setDiscount] = useState("");
   const [gstAmount, setGstAmount] = useState("");
   const [paymentMode, setPaymentMode] = useState("CASH");
   const [amount, setAmount] = useState("");
   const [roundOff, setRoundOff] = useState("");
-  const [grandTotal, setGrandTotal] = useState("");
+  const [grandTotal, setGrandTotal] = useState(0);
   const [itemName, setItemName] = useState("");
+  const [qty, setQty] = useState(1);
+  const [itemTotal, setItemTotal] = useState("");
   const [productDetails, setProductDetails] = useState({
     id: "",
     code: "",
     batchCode: "",
     price: "",
-    qty: "",
     unitPrice: "",
-    mrp: "",
+    mrp: 0,
     taxValue: "",
     gstPercentage: "",
     gstAmount: "",
@@ -40,49 +41,60 @@ const Sales = () => {
   });
 
   function getFormattedDate() {
-    const currentDate = new Date();
-    const day = String(currentDate.getDate()).padStart(2, "0");
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const year = currentDate.getFullYear();
-    return `${day}/${month}/${year}`;
+    try {
+      const currentDate = new Date();
+      const day = String(currentDate.getDate()).padStart(2, "0");
+      const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+      const year = currentDate.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch (error) {
+      throw error;
+    }
   }
 
   function generateBillNumber() {
-    let newBillNumber = short.generate();
-    newBillNumber = `TR_${newBillNumber}`;
-    return newBillNumber;
+    try {
+      let newBillNumber = short.generate();
+      newBillNumber = `TR_${newBillNumber}`;
+      return newBillNumber;
+    } catch (error) {
+      throw error;
+    }
   }
 
   const handleItemNameChange = async (e: any) => {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("No token found");
-    const newItemName = e.target.value;
-    setItemName(newItemName);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No token found");
+      const newItemName = e.target.value;
+      setItemName(newItemName);
 
-    let url = `http://localhost:3000/product/search/${newItemName}`;
+      let url = `http://localhost:3000/product/search/${newItemName}`;
 
-    const response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const productData = await response.json();
+      const productData = await response.json();
 
-    setProductDetails({
-      id: productData[0].id,
-      code: productData[0]?.code,
-      price: productData[0]?.price,
-      batchCode: productData[0]?.batchCode,
-      qty: productData[0]?.qty,
-      unitPrice: productData[0]?.unitPrice,
-      mrp: productData[0]?.mrp,
-      taxValue: productData[0]?.taxValue,
-      gstPercentage: productData[0]?.gstPercentage,
-      gstAmount: productData[0]?.gstAmount,
-      total: productData[0]?.total,
-    });
+      setProductDetails({
+        id: productData[0]?.id,
+        code: productData[0]?.code,
+        price: productData[0]?.price,
+        batchCode: productData[0]?.batchCode,
+        unitPrice: productData[0]?.unitPrice,
+        mrp: productData[0]?.mrp,
+        taxValue: productData[0]?.taxValue,
+        gstPercentage: productData[0]?.gstPercentage,
+        gstAmount: productData[0]?.gstAmount,
+        total: productData[0]?.total,
+      });
+    } catch (error) {
+      throw error;
+    }
   };
 
   const handleSalesSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -119,14 +131,14 @@ const Sales = () => {
           note: note,
           vehicleNumber: parseInt(vehicleNumber),
           deliveryCharge: deliveryCharge,
-          totalTaxableAmount: parseInt(totalTaxableAmount),
+          totalTaxableAmount: totalTaxableAmount,
           outStanding: parseInt(outstanding),
           discount: parseInt(discount),
           gstAmount: parseInt(gstAmount),
           paymentMode: paymentMode.toUpperCase(),
           amount: parseInt(amount),
           roundOff: parseInt(roundOff),
-          grandTotal: parseInt(grandTotal),
+          grandTotal: grandTotal,
           staffId: userId,
           productId: productDetails?.id,
         }),
@@ -148,11 +160,31 @@ const Sales = () => {
     setBillNumber(generatedNumber);
   }, []);
 
+  useEffect(() => {
+    const calculatedTotal: any = qty * productDetails?.mrp;
+    setItemTotal(calculatedTotal);
+  }, [qty, productDetails?.mrp]);
+
+  useEffect(() => {
+    const parsedItemTotal = parseInt(itemTotal) || 0;
+    const parsedDeliveryCharge = parseInt(deliveryCharge) || 0;
+    const parsedOutstanding = parseInt(outstanding) || 0;
+
+    const grandTotal =
+      parsedItemTotal + parsedDeliveryCharge + parsedOutstanding;
+
+    setGrandTotal(grandTotal);
+  }, [itemTotal, deliveryCharge, outstanding]);
+
   return (
     <div className="p-6 bg-gray-100 flex items-center justify-center">
       <div className="container max-w-screen-lg">
         <div>
-          <p className="text-gray-500 mb-6">Sales Billing Window </p>{" "}
+          {" "}
+          <h2 className="text-2xl font-semibold text-gray-900 leading-tight">
+            Sales Billing Window
+          </h2>
+          <br />
           <form onSubmit={handleSalesSubmit}>
             <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
               <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
@@ -332,8 +364,8 @@ const Sales = () => {
                         id="Qty"
                         className="transition-all flex items-center h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                         placeholder="qty"
-                        value={productDetails?.qty}
-                        readOnly
+                        value={qty}
+                        onChange={(e) => setQty(Number(e.target.value))}
                       />
                     </div>
                     <div className="md:col-span-1">
@@ -404,7 +436,7 @@ const Sales = () => {
                         id="total"
                         className="transition-all flex items-center h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                         placeholder="total"
-                        value={productDetails?.total}
+                        value={itemTotal}
                         readOnly
                       />
                     </div>
@@ -456,7 +488,9 @@ const Sales = () => {
                         id="total taxable amount"
                         className="transition-all flex items-center h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                         placeholder="total taxable amount"
-                        onChange={(e) => setTotalTaxableAmount(e.target.value)}
+                        onChange={(e) =>
+                          setTotalTaxableAmount(Number(e.target.value))
+                        }
                         value={totalTaxableAmount}
                       />
                     </div>{" "}
@@ -518,8 +552,8 @@ const Sales = () => {
                         id="amount"
                         className="transition-all flex items-center h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                         placeholder="amount"
-                        onChange={(e) => setAmount(e.target.value)}
-                        value={amount}
+                        readOnly
+                        value={itemTotal}
                       />
                     </div>
                   </div>{" "}
@@ -540,7 +574,7 @@ const Sales = () => {
                     />
                   </div>
 
-                  <div className="md:col-span-2">
+                  <div className="md:col-span-3">
                     <label form="grand total">Grand Total</label>
                     <input
                       type="text"
@@ -548,7 +582,7 @@ const Sales = () => {
                       id="grand total"
                       className="transition-all flex items-center h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                       placeholder="grand total"
-                      onChange={(e) => setGrandTotal(e.target.value)}
+                      readOnly
                       value={grandTotal}
                     />
                   </div>
@@ -556,11 +590,6 @@ const Sales = () => {
               </div>
               <div className="md:col-span-5 text-right">
                 <div className="inline-flex items-end">
-                  <button className="bg-white-300 hover:bg-blue-400 text-black font-bold py-2 px-4 rounded">
-                    Clear
-                  </button>{" "}
-                  &nbsp;
-                  <br />
                   <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Submit
                   </button>
