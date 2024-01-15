@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { backEndUrl } from "../env.constant";
 const short = require("short-uuid");
 
 const Sales = () => {
@@ -69,7 +70,7 @@ const Sales = () => {
       const newItemName = e.target.value;
       setItemName(newItemName);
 
-      let url = `http://localhost:3000/product/search/${newItemName}`;
+      let url = `${backEndUrl}/product/search/${newItemName}`;
 
       const response = await fetch(url, {
         headers: {
@@ -104,7 +105,7 @@ const Sales = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
-      let url = `http://localhost:3000/sales`;
+      let url = `${backEndUrl}/sales`;
 
       const decodedToken = jwtDecode(token);
       const userId: any = decodedToken?.sub;

@@ -4,6 +4,7 @@ import Customer from "./customer";
 import { jwtDecode } from "jwt-decode";
 import { Navigate, useNavigate } from "react-router";
 import Sales from "./sales";
+import { backEndUrl } from "../env.constant";
 
 interface Admin {
   name: string;
@@ -40,7 +41,7 @@ const Dashboard = ({ children }: any) => {
         throw new Error("No token found");
       }
 
-      const response = await fetch(`http://localhost:3000/admin/${userId}`, {
+      const response = await fetch(`${backEndUrl}/admin/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

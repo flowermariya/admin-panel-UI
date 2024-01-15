@@ -18,11 +18,6 @@ function App() {
     return !!token;
   }
 
-  interface PrivateRouteProps {
-    path: string;
-    element: React.ReactElement;
-  }
-
   const PrivateRoute: React.FC<any> = ({ children }) => {
     const location = useLocation();
 
@@ -36,6 +31,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route
           path="/customers"

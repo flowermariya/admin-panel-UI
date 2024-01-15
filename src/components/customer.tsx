@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { backEndUrl } from "../env.constant";
 
 interface Product {
   id: string;
@@ -22,7 +23,7 @@ const Customer = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
-      let url = "http://localhost:3000/customer";
+      let url = `${backEndUrl}/customer`;
       if (search) {
         url += `/search/${search}`;
       }
