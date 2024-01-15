@@ -185,7 +185,6 @@ const Sales = () => {
             Sales Billing Window
           </h2>
           <br />
-          {/* <p className="text-gray-500 mb-6">Sales Billing Window </p>{" "} */}
           <form onSubmit={handleSalesSubmit}>
             <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
               <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
