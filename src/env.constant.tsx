@@ -1,1 +1,1 @@
-export const backEndUrl = "http://localhost:3000";
+export const backEndUrl = "https://admin-panel-support.onrender.com";
